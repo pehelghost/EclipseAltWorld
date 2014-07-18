@@ -8,7 +8,6 @@ public class PSListener implements Listener {
 	
 	public PSListener(PSPlugin plugin){
 		this.plugin = plugin;
-		String s = "lolilol";
 	}
 	
 }
