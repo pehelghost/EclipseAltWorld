@@ -14,7 +14,7 @@ public class PSPlugin extends JavaPlugin {
 	public void onEnable(){
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PSListener(this), this);
-		//test
+		//test2
 	}
 	
 }
