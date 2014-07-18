@@ -1,0 +1,5 @@
+name: PlayerStats
+author: pehelghost
+version: 1.0
+main: be.goossenspi.PlayerStats.PSPlugin
+commands:
