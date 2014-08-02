@@ -1,6 +1,7 @@
 package be.goossenspi.PlayerStats;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -30,7 +31,7 @@ public class PlayerStats {
 			}
 			
 			if(!tableExists){
-				if(!statement.execute("CREATE TABLE " + plugin.getDatabase() + "." + tableName + " (id INT(20) NOT NULL AUTO_INCREMENT , pseudo VARCHAR (30) NOT NULL , PRIMARY KEY (id) ) ENGINE = INODB;")){
+				if(!statement.execute("CREATE TABLE " + plugin.database + "." + tableName + " (id INT(20) NOT NULL AUTO_INCREMENT , pseudo VARCHAR (30) NOT NULL , PRIMARY KEY (id) ) ENGINE = INNODB;") && statement.execute("INSERT INTO " + tableName + " (pseudo) VALUES ('default');")){
 					plugin.getLogger().warning("Unable to find or create table " + tableName);
 					plugin.getServer().getPluginManager().disablePlugin(plugin);
 				}else{
@@ -52,7 +53,7 @@ public class PlayerStats {
 		}
 	}
 	
-	public void updateArgument(String arg, String pseudo, String newValue){
+	public void updateArgument(String arg, String pseudo, String newValue) throws SQLException{
 		try {
 			Statement statement = plugin.getConnection().createStatement();
 			
@@ -60,11 +61,11 @@ public class PlayerStats {
 			
 			statement.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		}
 	}
 	
-	public void addArgument(String arg, String defaultValue, int maxlength){
+	public void addArgument(String arg, String defaultValue, int maxlength) throws SQLException{
 		try {
 			Statement statement = plugin.getConnection().createStatement();
 			
@@ -73,11 +74,24 @@ public class PlayerStats {
 			
 			statement.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		}
 	}
 	
-	public void removeArgument(String arg){
+	public void addArgument(String arg, String defaultValue, String type, int maxlength) throws SQLException{
+		try {
+			Statement statement = plugin.getConnection().createStatement();
+			
+			statement.execute("ALTER TABLE " + tableName + " ADD " + arg + " "+ type + "(" + maxlength + ");");
+			statement.execute("UPDATE " + tableName + " SET " + arg + " = '" + defaultValue + "' WHERE id > 0;");
+			
+			statement.close();
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+	
+	public void removeArgument(String arg) throws SQLException{
 		try {
 			Statement statement = plugin.getConnection().createStatement();
 			
@@ -85,8 +99,29 @@ public class PlayerStats {
 			
 			statement.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		}
 		
+	}
+	
+	public boolean doesArgExist(String arg) throws SQLException{
+		try {
+			Statement statement = plugin.getConnection().createStatement();
+			
+			ResultSetMetaData result = statement.executeQuery("SELECT * FROM " + tableName + " WHERE id = 1;").getMetaData();
+			int nbCol = result.getColumnCount();
+			for(int i = 1; i <= nbCol; i++){
+				if(result.getColumnName(i).equals("arg")) return true;
+			}
+			
+			statement.close();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return false;
+	}
+	
+	public String getTableName(){
+		return tableName;
 	}
 }
