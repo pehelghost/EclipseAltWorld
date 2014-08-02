@@ -1,0 +1,5 @@
+name: HospitalRespawn
+author: pehelghost
+version: 1.0
+main: be.goossenspi.HospitalRespawn.HRPlugin
+commands:
